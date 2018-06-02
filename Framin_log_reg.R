@@ -24,5 +24,15 @@ test <-  subset(framdata,sample == FALSE)
 nrow(train)
 nrow(test)
 
-framdatalg <-  glm(framdata,data = train , family = binomial)
+framdatalg <-  glm(train$TenYearCHD ~ . ,data = train , family = binomial)
 summary(framdatalg)
+
+predicttest <- predict(framdatalg,type = "response", newdata = test)
+
+table(test$TenYearCHD, predicttest > 0.5)
+
+ROCRpred <- prediction(predicttest,test$TenYearCHD)
+summary(ROCRpred)
+ROCRpred
+
+as.numeric((performance(ROCRpred,"auc")@y.values))
